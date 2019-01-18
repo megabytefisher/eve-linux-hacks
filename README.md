@@ -63,3 +63,21 @@ make install
 Be sure to update your bootloader configuration so that you can select and boot this kernel.
 
 Boot, and you should now be able to adjust the brightness. Audio still won't work yet, but we'll fix that next.
+
+# Audio
+After getting the kernel set up, there are two things to do to get audio working.
+
+First, blacklist the ```snd_hda_intel``` module. You can create a file at ```/etc/modprobe.d/blacklist.conf``` containing the following line:
+```
+blacklist snd_hda_intel
+```
+
+Next, copy the firmware from the recovery image to your firmware directory. There is a repository for firmware on the ChromiumOS git, but it doesn't seem to contain what we need. Maybe there is a licensing issue preventing them from distributing it there- which is why I don't include it in this repository.
+```
+wget https://dl.google.com/dl/edgedl/chromeos/recovery/chromeos_11021.81.0_eve_recovery_stable-channel_mp.bin.zip
+unzip chromeos_11021.81.0_eve_recovery_stable-channel_mp.bin.zip
+kpartx -av chromeos_11021.81.0_eve_recovery_stable-channel_mp.bin
+mkdir /mnt/tmp
+mount -t ext2 /dev/mapper/loop0p3 -o ro /mnt/tmp
+cp /mnt/tmp/lib/firmware/* /lib/firmware/*
+```
